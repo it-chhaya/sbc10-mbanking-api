@@ -16,10 +16,17 @@ public class AccountType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique = true, nullable = false, length = 50)
     private String alias; // payroll, saving-year
+
+    @Column(unique = true, nullable = false, length = 50)
     private String name; // Payroll, Saving Year
+
+    @Column(columnDefinition = "TEXT DEFAULT 'hello'")
     private String description;
 
+    @Column(nullable = false)
     private Boolean isDeleted;
 
     @OneToMany(mappedBy = "accountType")

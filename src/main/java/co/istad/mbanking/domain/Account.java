@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,4 +27,17 @@ public class Account {
     @ManyToOne
     private AccountType accountType;
 
+    @OneToOne
+    private Card card;
+
+    @ManyToOne
+    @JoinTable(
+            name = "user_accounts",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
+    )
+    private User user;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Transaction> transactionOfOwner;
 }
