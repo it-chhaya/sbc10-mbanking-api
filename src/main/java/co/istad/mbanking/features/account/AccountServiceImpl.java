@@ -7,6 +7,7 @@ import co.istad.mbanking.features.account.dto.AccountCreateRequest;
 import co.istad.mbanking.features.account.dto.AccountResponse;
 import co.istad.mbanking.features.accounttype.AccountTypeRepository;
 import co.istad.mbanking.features.user.UserRepository;
+import co.istad.mbanking.mapper.AccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,14 @@ public class AccountServiceImpl implements AccountService {
     private final AccountTypeRepository accountTypeRepository;
     private final UserRepository userRepository;
 
+    private final AccountMapper accountMapper;
+
     @Override
     public AccountResponse createNew(AccountCreateRequest accountCreateRequest) {
 
         // Validate account type
         AccountType accountType = accountTypeRepository
-                .findByAlias(accountCreateRequest.accountType())
+                .findByAlias(accountCreateRequest.accountTypeAlias())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Account Type has not been found"
@@ -57,9 +60,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // Transfer DTO to Domain Model
-        Account account = new Account();
-        account.setActNo(accountCreateRequest.actNo());
-        account.setBalance(accountCreateRequest.balance());
+        Account account = accountMapper.fromAccountCreateRequest(accountCreateRequest);
         account.setAccountType(accountType);
         account.setUser(user);
 
@@ -72,13 +73,7 @@ public class AccountServiceImpl implements AccountService {
         account = accountRepository.save(account);
 
         // Transfer Domain Model to DTO
-        return AccountResponse.builder()
-                .alias(account.getAlias())
-                .actName(account.getActName())
-                .actNo(account.getActNo())
-                .balance(account.getBalance())
-                .accountType(account.getAccountType().getName())
-                .build();
+        return accountMapper.toAccountResponse(account);
     }
 
     @Override

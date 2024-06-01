@@ -10,6 +10,6 @@ public record AccountResponse(
         String actName,
         String actNo,
         BigDecimal balance,
-        String accountType
+        String accountTypeAlias
 ) {
 }

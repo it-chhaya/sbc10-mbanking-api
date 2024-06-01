@@ -16,7 +16,7 @@ public record AccountCreateRequest(
         BigDecimal balance,
 
         @NotBlank(message = "Account type is required")
-        String accountType,
+        String accountTypeAlias,
 
         @NotBlank(message = "Account owner is required")
         String userUuid
