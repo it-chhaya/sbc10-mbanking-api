@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // SERIAL
     private Integer id;
 
     @ManyToOne
