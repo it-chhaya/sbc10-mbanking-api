@@ -4,7 +4,9 @@ import co.istad.mbanking.domain.Account;
 import co.istad.mbanking.domain.AccountType;
 import co.istad.mbanking.domain.User;
 import co.istad.mbanking.features.account.dto.AccountCreateRequest;
+import co.istad.mbanking.features.account.dto.AccountRenameRequest;
 import co.istad.mbanking.features.account.dto.AccountResponse;
+import co.istad.mbanking.features.account.dto.AccountTransferLimitRequest;
 import co.istad.mbanking.features.accounttype.AccountTypeRepository;
 import co.istad.mbanking.features.user.UserRepository;
 import co.istad.mbanking.mapper.AccountMapper;
@@ -28,6 +30,48 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
 
     private final AccountMapper accountMapper;
+
+
+    @Override
+    public void updateTransferLimit(String actNo, AccountTransferLimitRequest accountTransferLimitRequest) {
+
+        // Validate account
+        Account account = accountRepository
+                .findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account has not been found"));
+
+        account.setTransferLimit(accountTransferLimitRequest.amount());
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void hideAccount(String actNo) {
+
+        // Validate account
+        Account account = accountRepository
+                .findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account has not been found"));
+
+        account.setIsHidden(true);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public AccountResponse renameAccount(String actNo, AccountRenameRequest accountRenameRequest) {
+
+        // Validate account
+        Account account = accountRepository
+                .findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account has not been found"));
+
+        account.setAlias(accountRenameRequest.alias());
+        account = accountRepository.save(account);
+
+        return accountMapper.toAccountResponse(account);
+    }
 
     @Override
     public AccountResponse createNew(AccountCreateRequest accountCreateRequest) {
@@ -92,7 +136,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse findByActNo(String actNo) {
-        return null;
+
+        // Validate account no
+        Account account = accountRepository
+                .findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account has not been found"));
+
+        return accountMapper.toAccountResponse(account);
     }
 
 }

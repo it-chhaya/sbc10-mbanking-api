@@ -1,12 +1,21 @@
 package co.istad.mbanking.features.account;
 
 import co.istad.mbanking.features.account.dto.AccountCreateRequest;
+import co.istad.mbanking.features.account.dto.AccountRenameRequest;
 import co.istad.mbanking.features.account.dto.AccountResponse;
+import co.istad.mbanking.features.account.dto.AccountTransferLimitRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface AccountService {
+
+    void updateTransferLimit(String actNo, AccountTransferLimitRequest accountTransferLimitRequest);
+
+    void hideAccount(String actNo);
+
+    AccountResponse renameAccount(String actNo, AccountRenameRequest accountRenameRequest);
+
 
     /**
      * Create a new account

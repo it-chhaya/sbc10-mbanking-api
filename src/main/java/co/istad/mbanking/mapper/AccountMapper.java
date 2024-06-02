@@ -12,7 +12,7 @@ public interface AccountMapper {
     // Map Account to AccountResponse
     // Source = Account
     // Target = AccountResponse
-    @Mapping(source = "accountType.alias", target = "accountTypeAlias")
+    // @Mapping(source = "accountType.alias", target = "accountTypeAlias")
     AccountResponse toAccountResponse(Account account);
 
     Account fromAccountCreateRequest(AccountCreateRequest accountCreateRequest);
