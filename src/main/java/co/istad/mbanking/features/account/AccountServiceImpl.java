@@ -9,6 +9,9 @@ import co.istad.mbanking.features.accounttype.AccountTypeRepository;
 import co.istad.mbanking.features.user.UserRepository;
 import co.istad.mbanking.mapper.AccountMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -77,8 +80,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponse> findList() {
-        return List.of();
+    public Page<AccountResponse> findList(int pageNumber, int pageSize) {
+
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortById);
+
+        Page<Account> accounts = accountRepository.findAll(pageRequest);
+
+        return accounts.map(accountMapper::toAccountResponse);
     }
 
     @Override
