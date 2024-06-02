@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface AccountTypeService {
 
+    AccountTypeResponse findByAlias(String alias);
+
+    void deleteByAlias(String alias);
+
     AccountTypeResponse updateByAlias(String alias, AccountTypeUpdateRequest accountTypeUpdateRequest);
 
     void createNew(AccountTypeRequest accountTypeRequest);

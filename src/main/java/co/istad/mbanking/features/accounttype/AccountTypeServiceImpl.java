@@ -23,6 +23,30 @@ public class AccountTypeServiceImpl implements AccountTypeService {
     private final AccountTypeMapper accountTypeMapper;
 
     @Override
+    public AccountTypeResponse findByAlias(String alias) {
+
+        // Validate alias
+        AccountType accountType = accountTypeRepository
+                .findByAlias(alias)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account type alias has not been found"));
+
+        return accountTypeMapper.toAccountTypeResponse(accountType);
+    }
+
+    @Override
+    public void deleteByAlias(String alias) {
+
+        // Validate alias
+        AccountType accountType = accountTypeRepository
+                .findByAlias(alias)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account type alias has not been found"));
+
+        accountTypeRepository.delete(accountType);
+    }
+
+    @Override
     public AccountTypeResponse updateByAlias(String alias, AccountTypeUpdateRequest accountTypeUpdateRequest) {
 
         // Validate alias
@@ -33,7 +57,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
 
         log.info("Before map: {}, {}, {}", accountType.getId(), accountType.getDescription(), accountType.getIsDeleted());
         accountTypeMapper.fromAccountTypeUpdateRequest(accountTypeUpdateRequest, accountType);
-        log.info("Before map: {}, {}, {}", accountType.getId(), accountType.getDescription(), accountType.getIsDeleted());
+        log.info("After map: {}, {}, {}", accountType.getId(), accountType.getDescription(), accountType.getIsDeleted());
 
         accountType = accountTypeRepository.save(accountType);
 

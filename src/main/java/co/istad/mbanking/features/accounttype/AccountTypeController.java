@@ -17,6 +17,18 @@ public class AccountTypeController {
 
     private final AccountTypeService accountTypeService;
 
+    @GetMapping("/{alias}")
+    AccountTypeResponse findByAlias(@PathVariable("alias") String alias) {
+        return accountTypeService.findByAlias(alias);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{alias}")
+    void deleteByAlias(@PathVariable("alias") String alias) {
+        accountTypeService.deleteByAlias(alias);
+    }
+
+
     @PatchMapping("/{alias}")
     AccountTypeResponse updateByAlias(@PathVariable String alias,
                                       @RequestBody AccountTypeUpdateRequest accountTypeUpdateRequest) {
