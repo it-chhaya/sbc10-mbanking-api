@@ -3,6 +3,7 @@ package co.istad.mbanking.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,14 +27,14 @@ public class SecurityConfig {
                 .roles("USER", "ADMIN")
                 .build();
         UserDetails editor = User
-                .withUsername("editor")
-                .password(passwordEncoder.encode("editor123"))
-                .roles("USER", "EDITOR")
+                .withUsername("manager")
+                .password(passwordEncoder.encode("manager123"))
+                .roles("USER", "MANAGER")
                 .build();
         UserDetails subscriber = User
-                .withUsername("subscriber")
-                .password(passwordEncoder.encode("subscriber123"))
-                .roles("USER", "SUBSCRIBER")
+                .withUsername("customer")
+                .password(passwordEncoder.encode("customer123"))
+                .roles("USER", "CUSTOMER")
                 .build();
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         manager.createUser(admin);
@@ -48,6 +49,16 @@ public class SecurityConfig {
 
         // Endpoint security config
         http.authorizeHttpRequests(endpoint -> endpoint
+                .requestMatchers(HttpMethod.POST,"/api/v1/accounts/**").hasAnyRole("USER")
+                .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**").hasAnyRole("USER")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/**").hasAnyRole("USER")
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/**").hasAnyRole("USER")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/account-types/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasRole("USER")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
                 .anyRequest().authenticated()
         );
 
