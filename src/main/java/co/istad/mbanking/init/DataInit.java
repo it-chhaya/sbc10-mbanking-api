@@ -1,8 +1,10 @@
 package co.istad.mbanking.init;
 
 import co.istad.mbanking.domain.AccountType;
+import co.istad.mbanking.domain.Role;
 import co.istad.mbanking.domain.User;
 import co.istad.mbanking.features.accounttype.AccountTypeRepository;
+import co.istad.mbanking.features.user.RoleRepository;
 import co.istad.mbanking.features.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class DataInit {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final AccountTypeRepository accountTypeRepository;
 
     @PostConstruct
@@ -39,18 +42,34 @@ public class DataInit {
         }
 
         if (userRepository.count() == 0) {
-            User user = new User();
-            user.setUuid(UUID.randomUUID().toString());
-            user.setName("Chan Chhaya");
-            user.setGender("Male");
-            user.setPhoneNumber("098459947");
-            user.setPin("1234");
-            user.setPassword("qwer");
-            user.setNationalCardId("123456789");
-            user.setProfileImage("user/avatar.png");
-            user.setStudentCardId("ISTAD-000001");
-            user.setIsDeleted(false);
-            user.setIsBlocked(false);
+
+            Role user = new Role();
+            user.setName("USER");
+
+            Role customer = new Role();
+            customer.setName("CUSTOMER");
+
+            Role manager = new Role();
+            manager.setName("MANAGER");
+
+            Role admin = new Role();
+            admin.setName("ADMIN");
+
+            roleRepository.saveAll(List.of(user, customer, manager, admin));
+
+            User user1 = new User();
+            user1.setUuid(UUID.randomUUID().toString());
+            user1.setName("Chan Chhaya");
+            user1.setGender("Male");
+            user1.setPhoneNumber("098459947");
+            user1.setPin("1234");
+            user1.setPassword("qwer");
+            user1.setNationalCardId("123456789");
+            user1.setProfileImage("user/avatar.png");
+            user1.setStudentCardId("ISTAD-000001");
+            user1.setIsDeleted(false);
+            user1.setIsBlocked(false);
+            user1.setRoles(List.of(user, admin));
 
             User user2 = new User();
             user2.setUuid(UUID.randomUUID().toString());
@@ -63,10 +82,24 @@ public class DataInit {
             user2.setProfileImage("user/avatar.png");
             user2.setIsDeleted(false);
             user2.setIsBlocked(false);
+            user2.setRoles(List.of(user, manager));
+
+            User user3 = new User();
+            user3.setUuid(UUID.randomUUID().toString());
+            user3.setName("CR7");
+            user3.setGender("Male");
+            user3.setPhoneNumber("012459947");
+            user3.setPin("7777");
+            user3.setPassword("qwer");
+            user3.setNationalCardId("88889991");
+            user3.setProfileImage("user/avatar.png");
+            user3.setIsDeleted(false);
+            user3.setIsBlocked(false);
+            user3.setRoles(List.of(user, customer));
 
             //userRepository.save(user);
             //userRepository.save(user2);
-            userRepository.saveAll(List.of(user, user2));
+            userRepository.saveAll(List.of(user1, user2, user3));
         }
 
     }

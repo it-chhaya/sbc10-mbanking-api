@@ -3,6 +3,7 @@ package co.istad.mbanking.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,6 +45,7 @@ public class SecurityConfig {
         return manager;
     }
 
+
     @Bean
     SecurityFilterChain configureApiSecurity(HttpSecurity http) throws Exception {
 
@@ -53,9 +55,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**").hasAnyRole("USER")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/**").hasAnyRole("USER")
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/**").hasAnyRole("USER")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**", "/api/v1/account-types/**").hasAnyRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/account-types/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasRole("USER")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
