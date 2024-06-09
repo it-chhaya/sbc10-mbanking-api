@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    // SELECT * FROM users where phone_number = ?
+    Optional<User> findByPhoneNumberAndIsDeletedFalse(String phoneNumber);
+
     // SELECT * FROM users where uuid = ?
     Optional<User> findByUuid(String uuid);
 

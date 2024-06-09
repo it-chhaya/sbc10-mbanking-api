@@ -8,6 +8,7 @@ import co.istad.mbanking.features.user.RoleRepository;
 import co.istad.mbanking.features.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class DataInit {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AccountTypeRepository accountTypeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     void init() {
@@ -63,7 +65,7 @@ public class DataInit {
             user1.setGender("Male");
             user1.setPhoneNumber("098459947");
             user1.setPin("1234");
-            user1.setPassword("qwer");
+            user1.setPassword(passwordEncoder.encode("qwer"));
             user1.setNationalCardId("123456789");
             user1.setProfileImage("user/avatar.png");
             user1.setStudentCardId("ISTAD-000001");
@@ -77,7 +79,7 @@ public class DataInit {
             user2.setGender("Male");
             user2.setPhoneNumber("077459947");
             user2.setPin("1234");
-            user2.setPassword("qwer");
+            user2.setPassword(passwordEncoder.encode("qwer"));
             user2.setNationalCardId("88889999");
             user2.setProfileImage("user/avatar.png");
             user2.setIsDeleted(false);
@@ -90,7 +92,7 @@ public class DataInit {
             user3.setGender("Male");
             user3.setPhoneNumber("012459947");
             user3.setPin("7777");
-            user3.setPassword("qwer");
+            user3.setPassword(passwordEncoder.encode("qwer"));
             user3.setNationalCardId("88889991");
             user3.setProfileImage("user/avatar.png");
             user3.setIsDeleted(false);
