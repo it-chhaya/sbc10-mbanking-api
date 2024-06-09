@@ -25,6 +25,9 @@ public class User {
     @Column(length = 10, nullable = false, unique = true)
     private String phoneNumber;
 
+    @Column(length = 40, nullable = false, unique = true)
+    private String email;
+
     @Column(length = 4, nullable = false)
     private String pin;
 

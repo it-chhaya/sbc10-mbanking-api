@@ -18,16 +18,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
-
         User user = userRepository
                 .findByPhoneNumberAndIsDeletedFalse(phoneNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("User has not been found"));
 
         log.info("User: {}", user.getPhoneNumber());
-
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setUser(user);
-
         return customUserDetails;
     }
 
