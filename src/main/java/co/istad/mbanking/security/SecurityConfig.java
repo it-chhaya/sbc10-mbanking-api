@@ -58,6 +58,7 @@ public class SecurityConfig {
 
         // Endpoint security config
         http.authorizeHttpRequests(endpoint -> endpoint
+                .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/accounts/**").hasAnyRole("USER")
                 .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**").hasAnyRole("USER")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/**").hasAnyRole("USER")

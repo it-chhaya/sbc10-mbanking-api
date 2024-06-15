@@ -64,6 +64,7 @@ public class DataInit {
             user1.setName("Chan Chhaya");
             user1.setGender("Male");
             user1.setPhoneNumber("098459947");
+            user1.setEmail("admin@istad.co");
             user1.setPin("1234");
             user1.setPassword(passwordEncoder.encode("qwer"));
             user1.setNationalCardId("123456789");
@@ -77,7 +78,8 @@ public class DataInit {
             user2.setUuid(UUID.randomUUID().toString());
             user2.setName("Leo Messi");
             user2.setGender("Male");
-            user2.setPhoneNumber("077459947");
+            user2.setPhoneNumber("099459947");
+            user2.setEmail("manager@istad.co");
             user2.setPin("1234");
             user2.setPassword(passwordEncoder.encode("qwer"));
             user2.setNationalCardId("88889999");
@@ -91,6 +93,7 @@ public class DataInit {
             user3.setName("CR7");
             user3.setGender("Male");
             user3.setPhoneNumber("012459947");
+            user3.setEmail("customer@istad.co");
             user3.setPin("7777");
             user3.setPassword(passwordEncoder.encode("qwer"));
             user3.setNationalCardId("88889991");

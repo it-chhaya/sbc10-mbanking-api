@@ -7,6 +7,13 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    Boolean existsByNationalCardId(String nationalCardId);
+
+    Boolean existsByEmail(String email);
+
+    // SELECT EXISTS(SELECT * FROM users WHERE phone_number = ?)
+    Boolean existsByPhoneNumber(String phoneNumber);
+
     // SELECT * FROM users where phone_number = ?
     Optional<User> findByPhoneNumberAndIsDeletedFalse(String phoneNumber);
 
