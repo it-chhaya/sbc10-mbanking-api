@@ -59,21 +59,26 @@ public class SecurityConfig {
         // Endpoint security config
         http.authorizeHttpRequests(endpoint -> endpoint
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/accounts/**").hasAnyRole("USER")
-                .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**").hasAnyRole("USER")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/**").hasAnyRole("USER")
-                .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/**").hasAnyRole("USER")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**", "/api/v1/account-types/**").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasRole("USER")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+//                .requestMatchers(HttpMethod.POST, "/api/v1/accounts/**").hasAnyRole("USER")
+//                .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**").hasAnyRole("USER")
+//                .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/**").hasAnyRole("USER")
+//                .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/**").hasAnyRole("USER")
+//                .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**", "/api/v1/account-types/**").hasAnyRole("ADMIN")
+//                .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+//                .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasRole("USER")
+//                .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+//                .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
                 .anyRequest().authenticated()
         );
 
         // Security Mechanism (HTTP Basic Auth)
         // HTTP Basic Auth (Username & Password)
-        http.httpBasic(Customizer.withDefaults());
+        // http.httpBasic(Customizer.withDefaults());
+
+        // Security Mechanism (JWT)
+        http.oauth2ResourceServer(jwt -> jwt
+                .jwt(Customizer.withDefaults())
+        );
 
         // Disable CSRF (Cross Site Request Forgery) Token
         http.csrf(token -> token.disable());

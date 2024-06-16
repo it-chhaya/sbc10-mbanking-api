@@ -1,9 +1,6 @@
 package co.istad.mbanking.features.auth;
 
-import co.istad.mbanking.features.auth.dto.RegisterRequest;
-import co.istad.mbanking.features.auth.dto.RegisterResponse;
-import co.istad.mbanking.features.auth.dto.SendVerificationRequest;
-import co.istad.mbanking.features.auth.dto.VerificationRequest;
+import co.istad.mbanking.features.auth.dto.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
+    @PostMapping("/login")
+    AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
