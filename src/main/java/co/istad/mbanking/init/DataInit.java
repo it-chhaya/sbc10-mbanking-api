@@ -72,6 +72,7 @@ public class DataInit {
             user1.setStudentCardId("ISTAD-000001");
             user1.setIsDeleted(false);
             user1.setIsBlocked(false);
+            user1.setIsVerified(true);
             user1.setRoles(List.of(user, admin));
 
             User user2 = new User();
@@ -86,6 +87,7 @@ public class DataInit {
             user2.setProfileImage("user/avatar.png");
             user2.setIsDeleted(false);
             user2.setIsBlocked(false);
+            user2.setIsVerified(true);
             user2.setRoles(List.of(user, manager));
 
             User user3 = new User();
@@ -100,6 +102,7 @@ public class DataInit {
             user3.setProfileImage("user/avatar.png");
             user3.setIsDeleted(false);
             user3.setIsBlocked(false);
+            user3.setIsVerified(true);
             user3.setRoles(List.of(user, customer));
 
             //userRepository.save(user);
