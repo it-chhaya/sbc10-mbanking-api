@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -31,6 +32,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +62,14 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Auth: {}", auth.getPrincipal());
 
+        // ROLE_USER ROLE_ADMIN
+        String scope = auth
+                .getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+        log.info("Scope: {}", scope);
+
         // Generate JWT token by JwtEncoder
         // 1. Define JwtClaimsSet (Payload)
         Instant now = Instant.now();
@@ -68,10 +78,11 @@ public class AuthServiceImpl implements AuthService {
                 .subject("Access APIs")
                 .issuer(auth.getName())
                 .issuedAt(now)
-                .expiresAt(now.plus(30, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(10, ChronoUnit.SECONDS))
                 .audience(List.of("NextJS", "Android", "iOS"))
                 .claim("isAdmin", true)
                 .claim("studentId", "ISTAD0010")
+                .claim("scope", scope)
                 .build();
 
         //2. Generate token
