@@ -47,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final DaoAuthenticationProvider daoAuthenticationProvider;
     private final JwtEncoder accessTokenJwtEncoder;
+    private final JwtEncoder refreshTokenJwtEncoder;
 
     private final JavaMailSender javaMailSender;
 
@@ -55,6 +56,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
+
+        log.info("Access Token: {}", accessTokenJwtEncoder);
+        log.info("Refresh Token: {}", refreshTokenJwtEncoder);
 
         // Authenticate client with username (phoneNumber) and password
         Authentication auth = new UsernamePasswordAuthenticationToken(loginRequest.phoneNumber(), loginRequest.password());
@@ -73,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
         // Generate JWT token by JwtEncoder
         // 1. Define JwtClaimsSet (Payload)
         Instant now = Instant.now();
-        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+        JwtClaimsSet jwtAccessClaimsSet = JwtClaimsSet.builder()
                 .id(auth.getName())
                 .subject("Access APIs")
                 .issuer(auth.getName())
@@ -85,15 +89,31 @@ public class AuthServiceImpl implements AuthService {
                 .claim("scope", scope)
                 .build();
 
+        JwtClaimsSet jwtRefreshClaimsSet = JwtClaimsSet.builder()
+                .id(auth.getName())
+                .subject("Refresh Token")
+                .issuer(auth.getName())
+                .issuedAt(now)
+                .expiresAt(now.plus(7, ChronoUnit.DAYS))
+                .audience(List.of("NextJS", "Android", "iOS"))
+                .claim("scope", scope)
+                .build();
+
         //2. Generate token
         String accessToken = accessTokenJwtEncoder
-                .encode(JwtEncoderParameters.from(jwtClaimsSet))
+                .encode(JwtEncoderParameters.from(jwtAccessClaimsSet))
+                .getTokenValue();
+
+        String refreshToken = refreshTokenJwtEncoder
+                .encode(JwtEncoderParameters.from(jwtRefreshClaimsSet))
                 .getTokenValue();
         log.info("Access Token: {}", accessToken);
+        log.info("Refresh Token: {}", refreshToken);
 
         return AuthResponse.builder()
                 .tokenType("Bearer")
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

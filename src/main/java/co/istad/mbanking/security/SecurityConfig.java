@@ -1,15 +1,18 @@
 package co.istad.mbanking.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -54,15 +57,16 @@ public class SecurityConfig {
 
 
     @Bean
-    SecurityFilterChain configureApiSecurity(HttpSecurity http) throws Exception {
+    SecurityFilterChain configureApiSecurity(HttpSecurity http,
+                                             @Qualifier("accessTokenJwtDecoder") JwtDecoder jwtDecoder) throws Exception {
 
         // Endpoint security config
         http.authorizeHttpRequests(endpoint -> endpoint
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyAuthority("SCOPE_MANAGER", "SCOPE_ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasAuthority("SCOPE_USER")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyAuthority("SCOPE_MANAGER", "SCOPE_ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/account-types/**").hasAnyAuthority("SCOPE_MANAGER", "SCOPE_ADMIN")
                 .anyRequest().authenticated()
         );
 
@@ -72,11 +76,12 @@ public class SecurityConfig {
 
         // Security Mechanism (JWT)
         http.oauth2ResourceServer(jwt -> jwt
-                .jwt(Customizer.withDefaults())
+                .jwt(jwtConfigurer -> jwtConfigurer
+                        .decoder(jwtDecoder))
         );
 
         // Disable CSRF (Cross Site Request Forgery) Token
-        http.csrf(token -> token.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         // Make Stateless Session
         http.sessionManagement(session -> session
