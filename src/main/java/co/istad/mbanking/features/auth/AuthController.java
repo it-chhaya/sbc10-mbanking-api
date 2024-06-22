@@ -14,6 +14,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PostMapping("/refresh-token")
+    AuthResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return authService.refreshToken(refreshTokenRequest);
+    }
+
     @PostMapping("/login")
     AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);

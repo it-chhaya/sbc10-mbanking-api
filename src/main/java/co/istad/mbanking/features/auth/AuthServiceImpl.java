@@ -21,12 +21,16 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -45,7 +49,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+
     private final DaoAuthenticationProvider daoAuthenticationProvider;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+
     private final JwtEncoder accessTokenJwtEncoder;
     private final JwtEncoder refreshTokenJwtEncoder;
 
@@ -53,6 +60,63 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${spring.mail.username}")
     private String adminEmail;
+
+
+    @Override
+    public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+
+        String refreshToken = refreshTokenRequest.refreshToken();
+
+        // Authenticate client with refresh token
+        Authentication auth = new BearerTokenAuthenticationToken(refreshToken);
+        auth = jwtAuthenticationProvider.authenticate(auth);
+
+        log.info("Auth: {}", auth.getPrincipal());
+
+        Jwt jwt = (Jwt) auth.getPrincipal();
+
+        Instant now = Instant.now();
+        JwtClaimsSet jwtAccessClaimsSet = JwtClaimsSet.builder()
+                .id(jwt.getId())
+                .subject("Access APIs")
+                .issuer(jwt.getId())
+                .issuedAt(now)
+                .expiresAt(now.plus(10, ChronoUnit.SECONDS))
+                .audience(jwt.getAudience())
+                .claim("isAdmin", true)
+                .claim("studentId", "ISTAD0010")
+                .claim("scope", jwt.getClaimAsString("scope"))
+                .build();
+
+        String accessToken = accessTokenJwtEncoder
+                .encode(JwtEncoderParameters.from(jwtAccessClaimsSet))
+                .getTokenValue();
+
+        // Get expiration of refresh token
+        Instant expiresAt = jwt.getExpiresAt();
+        long remainingDays = Duration.between(now, expiresAt).toDays();
+        log.info("remainingDays: {}", remainingDays);
+        if (remainingDays <= 1) {
+            JwtClaimsSet jwtRefreshClaimsSet = JwtClaimsSet.builder()
+                    .id(auth.getName())
+                    .subject("Refresh Token")
+                    .issuer(auth.getName())
+                    .issuedAt(now)
+                    .expiresAt(now.plus(7, ChronoUnit.DAYS))
+                    .audience(List.of("NextJS", "Android", "iOS"))
+                    .claim("scope", jwt.getClaimAsString("scope"))
+                    .build();
+            refreshToken = refreshTokenJwtEncoder
+                    .encode(JwtEncoderParameters.from(jwtRefreshClaimsSet))
+                    .getTokenValue();
+        }
+
+        return AuthResponse.builder()
+                .tokenType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
@@ -94,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
                 .subject("Refresh Token")
                 .issuer(auth.getName())
                 .issuedAt(now)
-                .expiresAt(now.plus(7, ChronoUnit.DAYS))
+                .expiresAt(now.plus(1, ChronoUnit.DAYS))
                 .audience(List.of("NextJS", "Android", "iOS"))
                 .claim("scope", scope)
                 .build();
