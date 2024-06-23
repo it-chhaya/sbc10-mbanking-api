@@ -69,7 +69,10 @@ public class SecurityConfig {
 
         // Endpoint security config
         http.authorizeHttpRequests(endpoint -> endpoint
-                .requestMatchers("/api/v1/auth/**", "/api/v1/upload/**", "/upload/**").permitAll()
+                .requestMatchers("/api/v1/auth/**",
+                        "/api/v1/upload/**",
+                        "/upload/**")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/account-types/**").hasAnyAuthority("SCOPE_MANAGER", "SCOPE_ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/account-types/**").hasAuthority("SCOPE_USER")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/account-types/**").hasAnyAuthority("SCOPE_MANAGER", "SCOPE_ADMIN")
